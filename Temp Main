@@ -1,0 +1,98 @@
+Sub fonksiyon(ByRef elevation As Double, ByRef slope As Double, ByRef distanceSev As Double, ByRef grade As Double, ByRef distancePalye As Double, ByRef SevVePalyeSayisi As String)
+    Dim savedInput1 As String
+    Dim savedInput2 As String
+    Dim savedInput3 As String
+    Dim savedInput4 As String
+    Dim savedInput5 As String
+    Dim savedInput6 As String
+    
+    Dim finalInput1 As String
+    Dim finalInput2 As String
+    Dim finalInput3 As String
+    Dim finalInput4 As String
+    Dim finalInput5 As String
+    Dim finalInput6 As String
+    
+    Dim filePath1 As String
+    Dim filePath2 As String
+    Dim filePath3 As String
+    Dim filePath4 As String
+    Dim filePath5 As String
+    Dim filePath6 As String
+    
+    Dim userChoice1 As String
+    Dim userChoice2 As String
+    Dim userChoice3 As String
+    Dim userChoice4 As String
+    Dim userChoice5 As String
+    Dim userChoice6 As String
+    
+    ' Read from file
+    
+    
+    On Error GoTo Cancelled
+    ThisDrawing.Utility.InitializeUserInput 128, ""
+    ' Prompt user with keyword options
+    filePath1 = "C:\Temp\zeminKot.txt"
+    filePath2 = "C:\Temp\sevEgim.txt"
+    filePath3 = "C:\Temp\sevMesafe.txt"
+    filePath4 = "C:\Temp\palyeEgim.txt"
+    filePath5 = "C:\Temp\palyeMesafe.txt"
+    filePath6 = "C:\Temp\sevVePalyeSayisi.txt"
+    Call ReadInput(savedInput1, savedInput2, savedInput3, savedInput4, savedInput5, savedInput6, filePath1, filePath2, filePath3, filePath4, filePath5, filePath6, userChoice1)
+    userChoice1 = ThisDrawing.Utility.GetKeyword("ZEMIN KOTU DEGERINI GIRIN:<" & userChoice1 & ">:")
+    userChoice2 = ThisDrawing.Utility.GetKeyword("SEV EGIM DEGERINI GIRIN (V/H): <2>")
+    userChoice3 = ThisDrawing.Utility.GetKeyword("SEV MESAFE DEGERINI GIRIN:[5/10/15/20] <10>:")
+    userChoice4 = ThisDrawing.Utility.GetKeyword("PALYE EGIM DEGERINI GIRIN (V/H):[0.01/0.02/0.03/0.04/0.05]<0.02>:")
+    userChoice5 = ThisDrawing.Utility.GetKeyword("PALYE MESAFE DEGERINI GIRIN:[5/10/15/20] <10>:")
+    userChoice6 = ThisDrawing.Utility.GetKeyword("TOPLAM SEV VE PALYE SAYISINI SECIN: [3/5/7/9] <7>: ")
+    
+    ' If user presses Enter (blank input), use default
+    Call WriteInput(filePath1, filePath2, filePath3, filePath4, filePath5, filePath6, userChoice1)
+    
+    If userChoice1 = "" Then
+        finalInput1 = savedInput1
+    Else
+        finalInput1 = userChoice1
+    End If
+    
+    If userChoice2 = "" Then
+        finalInput2 = savedInput2
+    Else
+        finalInput2 = userChoice2
+    End If
+    
+    If userChoice3 = "" Then
+        finalInput3 = savedInput3
+    Else
+        finalInput3 = userChoice3
+    End If
+    
+    If userChoice4 = "" Then
+        finalInput4 = savedInput4
+    Else
+        finalInput4 = userChoice4
+    End If
+    
+    If userChoice5 = "" Then
+        finalInput5 = savedInput5
+    Else
+        finalInput5 = userChoice5
+    End If
+    
+    If userChoice6 = "" Then
+        finalInput6 = savedInput6
+    Else
+        finalInput6 = userChoice6
+    End If
+    
+    elevation = finalInput1
+    slope = finalInput2
+    distanceSev = finalInput3
+    grade = finalInput4
+    distancePalye = finalInput5
+    SevVePalyeSayisi = finalInput6
+    Exit Sub
+Cancelled:
+    MsgBox "Komut iptal edildi.", vbInformation
+End Sub
