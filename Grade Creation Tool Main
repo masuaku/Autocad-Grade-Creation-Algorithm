@@ -1,0 +1,217 @@
+Sub GradeCreationTool()
+    On Error GoTo Cancelled
+    Dim objSS As AcadSelectionSet
+    Dim objEnt As AcadEntity
+    Dim objLWPoly As AcadLWPolyline
+    Dim lines() As AcadLine
+    Dim lines2() As AcadLine
+    Dim vertices As Variant
+    Dim i As Integer
+    Dim numSegments As Integer
+    Dim pt1() As Double
+    Dim pt2() As Double
+    Dim pt3() As Double
+    Dim pt4() As Double
+    Dim offsetted As Variant
+    Dim offsetDistance As Double
+    Dim offset As Double
+    offset = 0
+    Dim m As Integer
+    Dim t As Integer
+    Dim obj As Object
+    Dim currentElevation As Double
+    Dim elevation As Double
+    ThisDrawing.Utility.InitializeUserInput 128, ""
+    Dim slope As Double
+    Dim distanceSev As Double
+    Dim grade As Double
+    Dim distancePalye As Double
+    Dim points As Variant
+    Dim SevVePalyeSayisi As String
+    'Fonksiyonu çağır
+    Call fonksiyon(elevation, slope, distanceSev, grade, distancePalye, SevVePalyeSayisi)
+    Dim offsetLine As AcadLine
+    Dim arc As AcadArc
+    Dim k As Double
+    Dim f As Double
+    Dim startAngle(0 To 100) As Double
+    Dim endAngle(0 To 100) As Double
+    Dim centerPoint(0 To 2) As Double
+    Dim radius As Double
+    radius = distanceSev
+    Dim a(0 To 2) As Double
+    Dim b(0 To 2) As Double
+    Dim c(0 To 2) As Double
+    Dim d(0 To 2) As Double
+    Dim e(0 To 2) As Double
+    Dim PI As Double
+    PI = Atn(1) * 4
+    Dim deg As Double
+    deg = PI / 180
+    Dim p1 As Double
+    p1 = 0
+    Dim p2 As Double
+    p2 = 0
+    Dim zero As Double
+    Dim g As Double
+    Dim dx1 As Double
+    Dim dx2 As Double
+    Dim dy1 As Double
+    Dim dy2 As Double
+    Dim dimension1 As Double
+    Dim dimension2 As Double
+    Dim dimension3 As Double
+    Dim dimension4 As Double
+    Dim dimension5 As Double
+    dimension5 = SevVePalyeSayisi * 3
+    Dim limit As Double
+    
+    ' Clear previous selection set
+    On Error Resume Next
+    Set objSS = ThisDrawing.SelectionSets("Select2DPolyline")
+    If Not objSS Is Nothing Then objSS.Delete
+    On Error GoTo 0
+
+    Set objSS = ThisDrawing.SelectionSets.Add("Select2DPolyline")
+    objSS.SelectOnScreen
+
+    If objSS.Count = 0 Then
+        MsgBox "No polyline selected.", vbExclamation
+        Exit Sub
+    End If
+
+    Set objEnt = objSS.Item(0)
+    If Not TypeOf objEnt Is AcadLWPolyline Then
+        MsgBox "Selected object is not a 2D polyline.", vbExclamation
+        Exit Sub
+    End If
+
+    Set objLWPoly = objEnt
+    
+    vertices = objLWPoly.Coordinates
+    currentElevation = elevation
+    If objLWPoly.Closed Then
+        numSegments = ((UBound(vertices) + 1) \ 2)
+    Else
+        numSegments = ((UBound(vertices) + 1) \ 2) - 1
+    End If
+    If objLWPoly.Closed Then
+        limit = numSegments - 1
+    Else
+        limit = numSegments - 2
+    End If
+    dimension1 = (numSegments) * 3
+    dimension2 = (numSegments) * 3
+    dimension3 = (SevVePalyeSayisi) * (numSegments) * 3
+    dimension4 = (SevVePalyeSayisi) * (numSegments) * 3
+    ReDim lines(0 To numSegments - 1)
+    ReDim pt1(0 To dimension1)
+    ReDim pt2(0 To dimension2)
+    ReDim pt3(0 To dimension3)
+    ReDim pt4(0 To dimension4)
+    For i = 0 To numSegments - 1
+        pt1(3 * i) = vertices(2 * i)
+        pt1(3 * i + 1) = vertices(2 * i + 1)
+        pt1(3 * i + 2) = currentElevation
+        If i = numSegments - 1 And objLWPoly.Closed Then
+            pt2(3 * i) = vertices(0)
+            pt2(3 * i + 1) = vertices(1)
+        Else
+            pt2(3 * i) = vertices(2 * i + 2)
+            pt2(3 * i + 1) = vertices(2 * i + 3)
+        End If
+        pt2(3 * i + 2) = currentElevation
+        
+        a(0) = pt1(3 * i)
+        a(1) = pt1(3 * i + 1)
+        a(2) = pt1(3 * i + 2)
+        
+        b(0) = pt2(3 * i)
+        b(1) = pt2(3 * i + 1)
+        b(2) = pt2(3 * i + 2)
+
+        Set lines(i) = ThisDrawing.ModelSpace.AddLine(a, b)
+        For t = 0 To SevVePalyeSayisi - 1
+            If t Mod 2 = 0 Then
+                currentElevation = currentElevation + (slope * distanceSev)
+            Else
+                currentElevation = currentElevation + (grade * distancePalye)
+            End If
+            If t Mod 2 = 0 Then
+                offsetDistance = distanceSev
+                offset = offset + offsetDistance
+                offsetted = lines(i).offset(offset)
+            Else
+                offsetDistance = distancePalye
+                offset = offset + offsetDistance
+                offsetted = lines(i).offset(offset)
+            End If
+            
+            ' Recreate new line at updated elevation
+            Set offsetLine = offsetted(0)
+            
+            pt3(3 * p1) = offsetLine.StartPoint(0)
+            pt3(3 * p1 + 1) = offsetLine.StartPoint(1)
+            pt3(3 * p1 + 2) = currentElevation
+            
+            pt4(3 * p1) = offsetLine.EndPoint(0)
+            pt4(3 * p1 + 1) = offsetLine.EndPoint(1)
+            pt4(3 * p1 + 2) = currentElevation
+            
+            c(0) = pt3(3 * p1)
+            c(1) = pt3(3 * p1 + 1)
+            c(2) = pt3(3 * p1 + 2)
+            d(0) = pt4(3 * p1)
+            d(1) = pt4(3 * p1 + 1)
+            d(2) = pt4(3 * p1 + 2)
+            ReDim lines2(0 To SevVePalyeSayisi - 1)
+            Set lines2(t) = ThisDrawing.ModelSpace.AddLine(c, d)
+            offsetLine.Delete
+            p1 = p1 + 1
+        Next t
+        offset = 0 ' Reset for next line
+        currentElevation = elevation
+    Next i
+
+    For g = 0 To limit
+        dy1 = pt4(dimension5 * p2 + 1) - pt2(3 * g + 1)
+        dx1 = pt4(dimension5 * p2) - pt2(3 * g)
+        If g = limit And objLWPoly.Closed Then
+            dy2 = pt3(1) - pt1(1)
+            dx2 = pt3(0) - pt1(0)
+        Else
+            dy2 = pt3(dimension5 * (p2 + 1) + 1) - pt2(3 * g + 1)
+            dx2 = pt3(dimension5 * (p2 + 1)) - pt2(3 * g)
+        End If
+        startAngle(g) = Atn2(dy2, dx2)
+        endAngle(g) = Atn2(dy1, dx1)
+        p2 = p2 + 1
+    Next g
+    For k = 0 To SevVePalyeSayisi - 1
+        If k Mod 2 = 0 Then
+            currentElevation = currentElevation + (slope * distanceSev)
+        Else
+            currentElevation = currentElevation + (grade * distancePalye)
+        End If
+        For f = 0 To limit
+            If f = limit And objLWPoly.Closed Then
+                centerPoint(0) = pt1(0)
+                centerPoint(1) = pt1(1)
+            Else
+                centerPoint(0) = pt2(3 * f)
+                centerPoint(1) = pt2(3 * f + 1)
+            End If
+            centerPoint(2) = currentElevation
+            Set arc = ThisDrawing.ModelSpace.AddArc(centerPoint, radius, startAngle(f), endAngle(f))
+        Next f
+        If k Mod 2 = 0 Then
+            radius = radius + distancePalye
+        Else
+            radius = radius + distanceSev
+        End If
+    Next k
+    objLWPoly.Delete
+    Exit Sub
+Cancelled:
+    MsgBox "Komut iptal edildi.", vbInformation
+End Sub
