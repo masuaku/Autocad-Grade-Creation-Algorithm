@@ -1,0 +1,21 @@
+Sub WriteInput(ByRef filePath1 As String, ByRef filePath2 As String, ByRef filePath3 As String, ByRef filePath4 As String, ByRef filePath5 As String, ByRef filePath6 As String, userChoice1 As String)
+    ' Save the input to the file
+    Open filePath1 For Output As #1
+    Print #1, userChoice1
+    Close #1
+    Open filePath2 For Output As #2
+    Print #2, 2
+    Close #2
+    Open filePath3 For Output As #3
+    Print #3, 10
+    Close #3
+    Open filePath4 For Output As #4
+    Print #4, 0.02
+    Close #4
+    Open filePath5 For Output As #5
+    Print #5, 10
+    Close #5
+    Open filePath6 For Output As #6
+    Print #6, 7
+    Close #6
+End Sub
