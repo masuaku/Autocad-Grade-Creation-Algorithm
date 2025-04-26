@@ -1,0 +1,25 @@
+Sub ReadInput(ByRef savedInput1, ByRef savedInput2, ByRef savedInput3, ByRef savedInput4, ByRef savedInput5 As String, ByRef savedInput6 As String, ByRef filePath1, ByRef filePath2, ByRef filePath3, ByRef filePath4, ByRef filePath5 As String, ByRef filePath6 As String, ByRef userChoice1 As String)
+    ' Read value ath1) = "" Then Exit Sub
+    Dim line1 As String
+    
+    If Dir(filePath1) = "" Then Exit Sub
+    Open filePath1 For Input As #1
+    Line Input #1, savedInput1
+    Close #1
+    Open filePath2 For Input As #2
+    Line Input #2, savedInput2
+    Close #2
+    Open filePath3 For Input As #3
+    Line Input #3, savedInput3
+    Close #3
+    Open filePath4 For Input As #4
+    Line Input #4, savedInput4
+    Close #4
+    Open filePath5 For Input As #5
+    Line Input #5, savedInput5
+    Close #5
+    Open filePath6 For Input As #6
+    Line Input #6, savedInput6
+    Close #6
+    userChoice1 = savedInput1
+End Sub
