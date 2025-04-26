@@ -1,0 +1,23 @@
+'To transform default arctangent function into 360 degree arctangent function
+Function Atn2(y As Double, x As Double) As Double
+    Const PI As Double = 3.14159265358979
+    
+    If x > 0 Then
+        Atn2 = Atn(y / x)
+    ElseIf x < 0 Then
+        If y >= 0 Then
+            Atn2 = Atn(y / x) + PI
+        Else
+            Atn2 = Atn(y / x) - PI
+        End If
+    Else ' x = 0
+        x = 0.00001
+        If y > 0 Then
+            Atn2 = PI / 2
+        ElseIf y < 0 Then
+            Atn2 = -PI / 2
+        Else ' x = 0 and y = 0
+            Atn2 = 0 ' Undefined, but we return 0 to avoid error
+        End If
+    End If
+End Function
